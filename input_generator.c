@@ -26,11 +26,3 @@ void generator(int n) {
 
     return;
 }
-
-// int main() {
-//     int n = 100;
-
-//     generator(n);
-
-//     return 0;
-// }

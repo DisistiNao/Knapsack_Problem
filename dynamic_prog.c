@@ -49,7 +49,7 @@ void dynamic_knapsack(int w, int *result) {
             }
         }
         result[a-1] = k[n][w];
-        printf("%d\n", result[a-1]);
+        // printf("%d\n", result[a-1]);
         
         for (int i = 0; i <= n; i++)
                 free(k[i]);
@@ -60,11 +60,3 @@ void dynamic_knapsack(int w, int *result) {
     
     return;
 }
-
-// int main() {
-//     int result[20], w = 100;
-
-//     dynamic_knapsack(w, result);
-
-//     return 0;
-// }
