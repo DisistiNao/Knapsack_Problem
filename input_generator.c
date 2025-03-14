@@ -19,7 +19,7 @@ void generator(int n) {
         fprintf(input, "%d\n", n);
         
         for(int j = 0; j < n; j++)
-            fprintf(input, "%d %d\n", rand() % max_weigh, rand() % max_value);
+            fprintf(input, "%d %d\n", 1 + rand() % max_weigh, 1 + rand() % max_value);
         
         fclose(input);
     }

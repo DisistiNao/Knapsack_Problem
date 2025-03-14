@@ -1,6 +1,10 @@
 #ifndef DYNAMIC_PROG_H_
 #define DYNAMIC_PROG_H_
 
-void dynamic_knapsack(int w, int *result);
+// Quantidade de arquivos de entrada
+#define ENTRIES 20
+
+// Resolve o problema da Mochila 0-1 sem repetição com programação dinâmica
+void dynamic_knapsack(int, int*);
 
 #endif
