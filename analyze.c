@@ -5,6 +5,7 @@
 #include "input_generator.h"
 #include "dynamic_prog.h"
 #include "backtrack.h"
+#include "branch_and_bound.h"
 
 // gcc -Wall -o prog analyze.c dynamic_prog.c input_generator.c -lm
 
@@ -23,6 +24,7 @@ int main() {
         generator(n);
         dynamic_knapsack(w, result);
         //backtrack_knapsack(w, result);
+        // bb_knapsack(w, result);
 
         end = clock();
         dif = (double)(end - start) / CLOCKS_PER_SEC;
@@ -40,6 +42,8 @@ int main() {
         
         generator(n);
         dynamic_knapsack(w, result);
+        // backtrack_knapsack(w, result);
+        // bb_knapsack(w, result);
         
         end = clock();
         dif = (double)(end - start) / CLOCKS_PER_SEC;
