@@ -85,7 +85,7 @@ void branch_and_bound(int *current, int level, int *best_value, int *best_soluti
 }
 
 // Resolve o problema da mochila 0-1 sem repetição com branch and bound
-void bb_knapsack(int w, int *result) {
+void bnb_knapsack(int w, int *result) {
 
     // Itera sobre os arquivos de entrada, cada um com um conjunto de itens
     for(int a = 1; a <= ENTRIES; a++) {

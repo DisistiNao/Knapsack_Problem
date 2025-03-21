@@ -1,12 +1,17 @@
-#include "backtrack.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_ITEMS 1000
-#define MAX_WEIGHT 1000
-int memo[MAX_ITEMS][MAX_WEIGHT];
+#include "backtrack.h"
 
-// Resolve o problema da mochila 0-1 sem repetição com backtrack
+int compare_items(const void *a, const void *b) {
+    Item *item_a = (Item *)a;
+    Item *item_b = (Item *)b;
+
+    if (item_a->ratio > item_b->ratio) return -1; // Sort in descending order
+    if (item_a->ratio < item_b->ratio) return 1;
+    return 0;
+}
+
 void backtrack_knapsack(int w, int *result) {
     for (int a = 1; a <= 20; a++) {
         int n = 0;
@@ -22,52 +27,40 @@ void backtrack_knapsack(int w, int *result) {
         fscanf(file, "%d", &n);
         printf("File: %s, Read n = %d\n", fp, n);
 
-        int *weigh = (int *)malloc(n * sizeof(int));
-        int *value = (int *)malloc(n * sizeof(int));
-
-        if (!weigh || !value) {
-            perror("Erro ao alocar memória");
-            fclose(file);
-            return; // Exit the function if memory allocation fails
-        }
+        Item *items = (Item *)malloc(n * sizeof(Item));
 
         for (int i = 0; i < n; i++) {
-            fscanf(file, "%d %d", &weigh[i], &value[i]);
+            fscanf(file, "%d %d", &items[i].weight, &items[i].value);
         }
         fclose(file);
+        qsort(items, n, sizeof(Item), compare_items);
 
-        memset(memo, -1, sizeof(memo));
-        int maxValue = backtrack(w, weigh, value, n, 0, 0, 0);
+
+        FILE* backtrack_file = fopen("backtrack_results", "a+");
+
+        int maxValue = backtrack(w, items, n, 0, 0, 0);
         printf("Valor máximo com backtrack = %d\n", maxValue);
 
-        free(weigh);
-        free(value);
+        free(items);
+        
     }
 }
 
-// Função backtrack
-int backtrack(int W, int wt[], int val[], int n, int index, int current_weight) {
+int backtrack(int W, Item items[], int n, int index, int current_weight, int current_value) {
     // Base case: if all items are processed or the knapsack is full
     if (index == n || current_weight >= W) {
-        return 0;
-    }
-
-    // Check if the result is already computed
-    if (memo[index][current_weight] != -1) {
-        return memo[index][current_weight];
+        return current_value;
     }
 
     // Do not include the current item
-    int withoutItem = backtrack(W, wt, val, n, index + 1, current_weight);
+    int withoutItem = backtrack(W, items, n, index + 1, current_weight, current_value);
 
     // Include the current item (if it fits)
     int withItem = 0;
-    if (current_weight + wt[index] <= W) {
-        withItem = val[index] + backtrack(W, wt, val, n, index + 1, current_weight + wt[index]);
+    if (current_weight + items[index].weight <= W) {
+        withItem = backtrack(W, items, n, index + 1, current_weight + items[index].weight, current_value + items[index].value);
     }
 
-    // Store the result in the memoization table
-    memo[index][current_weight] = (withoutItem > withItem) ? withoutItem : withItem;
-
-    return memo[index][current_weight];
+    // Return the maximum value between including or excluding the item
+    return (withoutItem > withItem) ? withoutItem : withItem;
 }

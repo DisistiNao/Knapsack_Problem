@@ -6,9 +6,6 @@
 
 // Gera arquivos de entrada para o problema da mochila 0-1
 void generator(int n) {
-
-    // Peso e valor máximos dos itens
-    int max_weigh = 30, max_value = 100;
     
     srand(time(NULL));
     
@@ -28,7 +25,7 @@ void generator(int n) {
         
         // Gera pesos e valores aleatórios para cada item e escreve no arquivo
         for(int j = 0; j < n; j++)
-            fprintf(input, "%d %d\n", 1 + rand() % max_weigh, 1 + rand() % max_value);
+            fprintf(input, "%d %d\n", 1 + rand() % MAX_WEIGH, 1 + rand() % MAX_VALUE);
         
         fclose(input);
     }

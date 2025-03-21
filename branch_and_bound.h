@@ -17,6 +17,6 @@ void copy_solution(int, int*, int*);
 void branch_and_bound(int*, int, int*, int*, int*, int*, int, int);
 
 // Resolve o problema da mochila 0-1 sem repetição com branch and bound
-void bb_knapsack(int, int*);
+void bnb_knapsack(int, int*);
 
 #endif

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <getopt.h>
@@ -10,12 +11,14 @@
 
 /*
 Uso:
-    gcc -Wall -o prog analyze.c dynamic_prog.c input_generator.c branch_and_bound.c -lm
+    gcc -Wall -o prog analyze.c input_generator.c dynamic_prog.c backtrack.c branch_and_bound.c -lm
 */
 
 int main(int argc, char *argv[]) {
     int result[20];
     int w = 100, n = 100;
+
+    FILE *backtrack_file, *bnb_file, *dynamic_prog_file;
 
     clock_t start, end;
     double dif;
@@ -64,9 +67,14 @@ int main(int argc, char *argv[]) {
 
     // ----- Primeiro loop: varia n com w fixo
 
+    backtrack_file = fopen("backtrack_results.txt", "a+");
+    dynamic_prog_file = fopen("dynamic_results.txt", "a+");
+    bnb_file = fopen("bnb_results.txt", "a+");
+
     for(int i = 0; i < 10; i++) {
-        n = 100 * pow(2, i);
+        n = 10 * pow(2, i);
         generator(n);
+
 
         // Programação dinâmica
         if(run_dynamic) {
@@ -75,26 +83,39 @@ int main(int argc, char *argv[]) {
             end = clock();
             dif = (double)(end - start) / CLOCKS_PER_SEC;
             printf("Programação Dinâmica: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+
+            fprintf(dynamic_prog_file, "%d %.6lf\n", n, dif);
+            
         }
 
         // Backtrack
-        // if(run_backtrack) {
-        //     start = clock();
-        //     backtrack_knapsack(w, result);
-        //     end = clock();
-        //     dif = (double)(end - start) / CLOCKS_PER_SEC;
-        //     printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
-        // }
+        if(run_backtrack) {
+            start = clock();
+            backtrack_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+
+            fprintf(backtrack_file, "%d %.6lf\n", n, dif);
+         
+        }
 
         // Branch and bound
         if(run_branch) {
             start = clock();
-            bb_knapsack(w, result);
+            bnb_knapsack(w, result);
             end = clock();
             dif = (double)(end - start) / CLOCKS_PER_SEC;
             printf("Branch and Bound: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+
+            fprintf(bnb_file, "%d %.6lf\n", n, dif);
+
         }
     }
+
+    fclose(backtrack_file);
+    fclose(dynamic_prog_file);
+    fclose(bnb_file);
 
     printf("\n");
 
@@ -116,18 +137,18 @@ int main(int argc, char *argv[]) {
         }
 
         // Backtrack
-        // if(run_backtrack) {
-        //     start = clock();
-        //     backtrack_knapsack(w, result);
-        //     end = clock();
-        //     dif = (double)(end - start) / CLOCKS_PER_SEC;
-        //     printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
-        // }
+        if(run_backtrack) {
+            start = clock();
+            backtrack_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        }
 
         // Branch and bound
         if(run_branch) {
             start = clock();
-            bb_knapsack(w, result);
+            bnb_knapsack(w, result);
             end = clock();
             dif = (double)(end - start) / CLOCKS_PER_SEC;
             printf("Branch and Bound: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
