@@ -1,8 +1,10 @@
 #ifndef BACKTRACK_H_
 #define BACKTRACK_H_
 
-int backtrack(int W, int wt[], int val[], int n, int index, int current_weight, int current_value);
+// Função backtrack
+int backtrack(int, int*, int*, int, int, int, int);
 
-void backtrack_knapsack(int w, int *result);
+// Resolve o problema da mochila 0-1 sem repetição com backtrack
+void backtrack_knapsack(int, int*);
 
 #endif

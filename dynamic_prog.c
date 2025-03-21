@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Resolve o problema da Mochila 0-1 sem repetição com programação dinâmica,
+// Resolve o problema da mochila 0-1 sem repetição com programação dinâmica,
 // onde w é a capacidade máxima da mochila
 void dynamic_knapsack(int w, int *result) {
     
@@ -17,23 +17,29 @@ void dynamic_knapsack(int w, int *result) {
         // Formata o nome do arquivo
         sprintf(file_path, "Input/%02d.txt", a);
         
-        FILE* file = fopen (file_path, "r");
+        FILE *file = fopen(file_path, "r");
         
         // Retorna erro ao não encontrar o arquivo
-        if (!file) {
+        if(!file) {
             perror("Erro ao abrir o arquivo.");
             continue;
         }
 
-        fscanf (file, "%d", &n);
+        fscanf(file, "%d", &n);
 
         // ----- Aloca memória para a mochila
+
+        // Evita problema de alocação vazia/negativa
+        if(n <= 0) {
+            fclose(file);
+            continue;
+        }
 
         int *weigh = (int*)malloc(n * sizeof(int)); // array que armazena os pesos
         int *value = (int*)malloc(n * sizeof(int)); // array que armazena os valores
 
         // Retorna erro ao não encontrar alguns dos valores
-        if (!weigh || !value) {
+        if(!weigh || !value) {
             perror("Erro ao alocar memória.");
             fclose(file);
             return;
@@ -44,7 +50,7 @@ void dynamic_knapsack(int w, int *result) {
         for(int i = 1; i <= n; i++) 
             fscanf(file, "%d %d", &weigh[i-1], &value[i-1]); // armazena os pesos e valores
 
-        fclose (file);
+        fclose(file);
 
         // ----- Inicia a matriz de programação dinâmica
         
@@ -52,7 +58,7 @@ void dynamic_knapsack(int w, int *result) {
     
         int **k = (int**)malloc((n + 1) * sizeof(int*));
 
-        for (int i = 0; i <= n; i++)
+        for(int i = 0; i <= n; i++)
             k[i] = (int *)calloc(w + 1, sizeof(int)); // inicializa com zero
 
         // ----- Preenche a matriz de programação dinâmica
@@ -79,7 +85,7 @@ void dynamic_knapsack(int w, int *result) {
         
         // ----- Libera a memória
 
-        for (int i = 0; i <= n; i++)
+        for(int i = 0; i <= n; i++)
                 free(k[i]);
             free(k);
             free(weigh);

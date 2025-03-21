@@ -1,53 +1,137 @@
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
+#include <getopt.h>
 
 #include "input_generator.h"
 #include "dynamic_prog.h"
 #include "backtrack.h"
 #include "branch_and_bound.h"
 
-// gcc -Wall -o prog analyze.c dynamic_prog.c input_generator.c -lm
+/*
+Uso:
+    gcc -Wall -o prog analyze.c dynamic_prog.c input_generator.c branch_and_bound.c -lm
+*/
 
-int main() {
+int main(int argc, char *argv[]) {
     int result[20];
     int w = 100, n = 100;
 
     clock_t start, end;
     double dif;
 
+    // Define as opções longas
+    static struct option long_options[] = {
+        {"dynamic", no_argument, 0, 'd'},
+        {"backtrack", no_argument, 0, 'b'},
+        {"branch", no_argument, 0, 'r'},
+        {0, 0, 0, 0} // Última entrada deve ser zerada
+    };
+
+    // Variáveis para controlar quais métodos executar
+    int run_dynamic = 0;
+    int run_backtrack = 0;
+    int run_branch = 0;
+
+    // ----- Parser das opções da linha de comando
+    
+    int opt;
+    int option_index = 0;
+    
+    while((opt = getopt_long(argc, argv, "", long_options, &option_index)) != -1) {
+        switch (opt) {
+            case 'd':
+                run_dynamic = 1;
+                break;
+            case 'b':
+                run_backtrack = 1;
+                break;
+            case 'r':
+                run_branch = 1;
+                break;
+            default:
+                fprintf(stderr, "Uso: %s [--dynamic] [--backtrack] [--branch]\n", argv[0]);
+                return 1;
+        }
+    }
+
+    // Se nenhuma flag for passada, executa todos os métodos
+    if(!run_dynamic && !run_backtrack && !run_branch) {
+        run_dynamic = 1;
+        run_backtrack = 1;
+        run_branch = 1;
+    }
+
+    // ----- Primeiro loop: varia n com w fixo
+
     for(int i = 0; i < 10; i++) {
         n = 100 * pow(2, i);
-        
-        start = clock();
-        
         generator(n);
-        dynamic_knapsack(w, result);
-        //backtrack_knapsack(w, result);
-        // bb_knapsack(w, result);
 
-        end = clock();
-        dif = (double)(end - start) / CLOCKS_PER_SEC;
-        printf ("%.6lf seconds to execute when W = %d and N = %d.\n", dif, w, n);
+        // Programação dinâmica
+        if(run_dynamic) {
+            start = clock();
+            dynamic_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Programação Dinâmica: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        }
+
+        // Backtrack
+        // if(run_backtrack) {
+        //     start = clock();
+        //     backtrack_knapsack(w, result);
+        //     end = clock();
+        //     dif = (double)(end - start) / CLOCKS_PER_SEC;
+        //     printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        // }
+
+        // Branch and bound
+        if(run_branch) {
+            start = clock();
+            bb_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Branch and Bound: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        }
     }
 
     printf("\n");
 
-    n = 400;
+    // ----- Segundo loop: varia w com n fixo
 
+    n = 400;
+    
     for(int i = 0; i < 10; i++) {
         w = 100 * pow(2, i);
-        
-        start = clock();
-        
         generator(n);
-        dynamic_knapsack(w, result);
-        // backtrack_knapsack(w, result);
-        // bb_knapsack(w, result);
-        
-        end = clock();
-        dif = (double)(end - start) / CLOCKS_PER_SEC;
-        printf ("%.6lf seconds to execute when W = %d and N = %d.\n", dif, w, n);
+
+        // Programação dinâmica
+        if(run_dynamic) {
+            start = clock();
+            dynamic_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Programação Dinâmica: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        }
+
+        // Backtrack
+        // if(run_backtrack) {
+        //     start = clock();
+        //     backtrack_knapsack(w, result);
+        //     end = clock();
+        //     dif = (double)(end - start) / CLOCKS_PER_SEC;
+        //     printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        // }
+
+        // Branch and bound
+        if(run_branch) {
+            start = clock();
+            bb_knapsack(w, result);
+            end = clock();
+            dif = (double)(end - start) / CLOCKS_PER_SEC;
+            printf("Branch and Bound: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
+        }
     }
 
     return 0;

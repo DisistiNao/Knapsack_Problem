@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_ITEMS 1000
+#define MAX_WEIGHT 1000
+int memo[MAX_ITEMS][MAX_WEIGHT];
+
+// Resolve o problema da mochila 0-1 sem repetição com backtrack
 void backtrack_knapsack(int w, int *result) {
     for (int a = 1; a <= 20; a++) {
         int n = 0;
@@ -31,6 +36,7 @@ void backtrack_knapsack(int w, int *result) {
         }
         fclose(file);
 
+        memset(memo, -1, sizeof(memo));
         int maxValue = backtrack(w, weigh, value, n, 0, 0, 0);
         printf("Valor máximo com backtrack = %d\n", maxValue);
 
@@ -39,30 +45,29 @@ void backtrack_knapsack(int w, int *result) {
     }
 }
 
-int backtrack(int W, int wt[], int val[], int n, int index, int current_weight, int current_value) {
-    // Debugging print statement
-    //printf("Index: %d, Current Weight: %d, Current Value: %d\n", index, current_weight, current_value);
-
+// Função backtrack
+int backtrack(int W, int wt[], int val[], int n, int index, int current_weight) {
     // Base case: if all items are processed or the knapsack is full
     if (index == n || current_weight >= W) {
-        return current_value;
+        return 0;
+    }
+
+    // Check if the result is already computed
+    if (memo[index][current_weight] != -1) {
+        return memo[index][current_weight];
     }
 
     // Do not include the current item
-    int withoutItem = backtrack(W, wt, val, n, index + 1, current_weight, current_value);
+    int withoutItem = backtrack(W, wt, val, n, index + 1, current_weight);
 
     // Include the current item (if it fits)
     int withItem = 0;
     if (current_weight + wt[index] <= W) {
-        withItem = backtrack(W, wt, val, n, index + 1, current_weight + wt[index], current_value + val[index]);
+        withItem = val[index] + backtrack(W, wt, val, n, index + 1, current_weight + wt[index]);
     }
 
-    // print("teste");
-    // Tirar gambiarra
-    // Return the maximum value between including or excluding the item
-    if(withoutItem > withItem)
-        return withoutItem;
-    return withItem;
-    
-    return (withoutItem > withItem) ? withoutItem : withItem;
+    // Store the result in the memoization table
+    memo[index][current_weight] = (withoutItem > withItem) ? withoutItem : withItem;
+
+    return memo[index][current_weight];
 }
