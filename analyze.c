@@ -67,14 +67,16 @@ int main(int argc, char *argv[]) {
 
     // ----- Primeiro loop: varia n com w fixo
 
-    backtrack_file = fopen("backtrack_results.txt", "a+");
-    dynamic_prog_file = fopen("dynamic_results.txt", "a+");
-    bnb_file = fopen("bnb_results.txt", "a+");
+    backtrack_file = fopen("results/backtrack_results.txt", "a+");
+    dynamic_prog_file = fopen("results/dynamic_results.txt", "a+");
+    bnb_file = fopen("results/bnb_results.txt", "a+");
+
+    n = 10;
 
     for(int i = 0; i < 10; i++) {
-        n = 10 * pow(2, i);
+        // n = 100 * pow(2, i);
+        n += 5;
         generator(n);
-
 
         // Programação dinâmica
         if(run_dynamic) {
@@ -85,7 +87,6 @@ int main(int argc, char *argv[]) {
             printf("Programação Dinâmica: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
 
             fprintf(dynamic_prog_file, "%d %.6lf\n", n, dif);
-            
         }
 
         // Backtrack
@@ -97,7 +98,6 @@ int main(int argc, char *argv[]) {
             printf("Backtrack: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
 
             fprintf(backtrack_file, "%d %.6lf\n", n, dif);
-         
         }
 
         // Branch and bound
@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
             printf("Branch and Bound: %.6lf segundos para W = %d e N = %d\n", dif, w, n);
 
             fprintf(bnb_file, "%d %.6lf\n", n, dif);
-
         }
     }
 
@@ -122,6 +121,7 @@ int main(int argc, char *argv[]) {
     // ----- Segundo loop: varia w com n fixo
 
     n = 400;
+    n = 30;
     
     for(int i = 0; i < 10; i++) {
         w = 100 * pow(2, i);

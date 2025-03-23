@@ -15,7 +15,7 @@ void dynamic_knapsack(int w, int *result) {
         char file_path[20];
         
         // Formata o nome do arquivo
-        sprintf(file_path, "Input/%02d.txt", a);
+        sprintf(file_path, "input/%02d.txt", a);
         
         FILE *file = fopen(file_path, "r");
         

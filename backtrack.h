@@ -1,14 +1,22 @@
 #ifndef BACKTRACK_H_
 #define BACKTRACK_H_
 
+// Quantidade de arquivos de entrada
+#define ENTRIES 20
+
+// Definição da estrutura do item
 typedef struct {
     int weight;
     int value;
-    double ratio; 
 } Item;
 
-int backtrack(int W, Item items[], int n, int index, int current_weight, int current_value);
+// Compara dois itens pelo peso
+int compare_items(const void*, const void*);
 
-void backtrack_knapsack(int w, int *result);
+// Função backtrack
+int backtrack(int, Item*, int, int, int, int);
+
+// Resolve o problema da mochila 0-1 sem repetição com backtrack
+void backtrack_knapsack(int, int*);
 
 #endif

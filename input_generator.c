@@ -14,7 +14,7 @@ void generator(int n) {
 
         // Formata o nome do arquivo
         char filename[20];  
-        sprintf(filename, "Input/%02d.txt", i);
+        sprintf(filename, "input/%02d.txt", i);
         
         // Abre o arquivo para escrita
         FILE *input;

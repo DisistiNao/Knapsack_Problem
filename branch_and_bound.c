@@ -4,26 +4,26 @@
 
 // Cria uma solução inicial (gulosa) para a mochila 0-1, 
 // considerando os itens a partir do nível 'level' com capacidade 'w'
-void initial_solution(int level, int w, int n, int *solution, int *weigh) {
+void initial_solution(int level, int w, int n, int *solution, int *weight) {
     for(int i = level; i < n; i++) {
         solution[i] = 0;
         // Se o item cabe na mochila, adiciona
-        if(weigh[i] <= w) {
-            w -= weigh[i]; // diminui a capacidade da mochila
+        if(weight[i] <= w) {
+            w -= weight[i]; // diminui a capacidade da mochila
             solution[i] = 1;
         }
     }
 }
 
 // Calcula um limite superior para a poda
-// int calc_bound(int level, int w, int n, int *weigh, int *value) {
+// int calc_bound(int level, int w, int n, int *weight, int *value) {
 //     int bound = 0;
 
 //     for(int i = level; i < n; i++) {
 //         // Se o item cabe na mochila, adiciona
-//         if(weigh[i] <= w) {
+//         if(weight[i] <= w) {
 //             bound += value[i];
-//             w -= weigh[i]; // diminui a capacidade da mochila
+//             w -= weight[i]; // diminui a capacidade da mochila
 //         }
 //         else {
 //             break; // para não adicionar itens fracionados
@@ -48,7 +48,7 @@ void copy_solution(int n, int *dest, int *src) {
 
 // Função branch and bound com poda baseada em limite guloso
 void branch_and_bound(int *current, int level, int *best_value, int *best_solution,
-                      int *weigh, int *value, int n, int w) {
+                      int *weight, int *value, int n, int w) {
     
     // Se já foram considerados todos os itens, atualiza a melhor solução, se for o caso
     if(level == n) {
@@ -63,25 +63,25 @@ void branch_and_bound(int *current, int level, int *best_value, int *best_soluti
     // Calcula um limite superior para a ramificação atual usando solução gulosa
     int temp[n];
     copy_solution(n, temp, current);
-    initial_solution(level, w, n, temp, weigh);
+    initial_solution(level, w, n, temp, weight);
     int bound = calc_value(n, temp, value);
 
     // Calcula um limite superior
-    // int bound = calc_value(level, current, value) + calc_bound(level, w, n, weigh, value);
+    // int bound = calc_value(level, current, value) + calc_bound(level, w, n, weight, value);
     
     // Se o limite não for promissor, poda a ramificação
     if(bound <= *best_value)
         return;
     
     // Ramificação incluindo o item atual, se couber na capacidade restante
-    if(weigh[level] <= w) {
+    if(weight[level] <= w) {
         current[level] = 1;
-        branch_and_bound(current, level + 1, best_value, best_solution, weigh, value, n, w - weigh[level]);
+        branch_and_bound(current, level + 1, best_value, best_solution, weight, value, n, w - weight[level]);
     }
 
     // Ramificação sem incluir o item atual
     current[level] = 0;
-    branch_and_bound(current, level + 1, best_value, best_solution, weigh, value, n, w);
+    branch_and_bound(current, level + 1, best_value, best_solution, weight, value, n, w);
 }
 
 // Resolve o problema da mochila 0-1 sem repetição com branch and bound
@@ -96,7 +96,7 @@ void bnb_knapsack(int w, int *result) {
         char file_path[20];
 
         // Formata o nome do arquivo
-        sprintf(file_path, "Input/%02d.txt", a);
+        sprintf(file_path, "input/%02d.txt", a);
         
         FILE *file = fopen(file_path, "r");
 
@@ -116,11 +116,11 @@ void bnb_knapsack(int w, int *result) {
             continue;
         }
         
-        int *weigh = (int*)malloc(n * sizeof(int)); // array que armazena os pesos
+        int *weight = (int*)malloc(n * sizeof(int)); // array que armazena os pesos
         int *value = (int*)malloc(n * sizeof(int)); // array que armazena os valores
         
         // Retorna erro ao não encontrar alguns dos valores
-        if(!weigh || !value) {
+        if(!weight || !value) {
             perror("Erro ao alocar memória.");
             fclose(file);
             return;
@@ -129,7 +129,7 @@ void bnb_knapsack(int w, int *result) {
         // ----- Lê os itens
 
         for(int i = 0; i < n; i++)
-            fscanf(file, "%d %d", &weigh[i], &value[i]); // armazena os pesos e valores
+            fscanf(file, "%d %d", &weight[i], &value[i]); // armazena os pesos e valores
         
         fclose(file);
         
@@ -141,18 +141,18 @@ void bnb_knapsack(int w, int *result) {
         int best = 0;
         
         // Gera uma solução inicial (gulosa)
-        initial_solution(0, w, n, current, weigh);
+        initial_solution(0, w, n, current, weight);
         best = calc_value(n, current, value);
         copy_solution(n, best_solution, current);
         
-        branch_and_bound(current, 0, &best, best_solution, weigh, value, n, w);
+        branch_and_bound(current, 0, &best, best_solution, weight, value, n, w);
         
         // Coloca a melhor solução encontrada no vetor resultado
         result[a - 1] = best;
 
         // ----- Libera a memória
 
-        free(weigh);
+        free(weight);
         free(value);
         free(current);
         free(best_solution);
